@@ -1,6 +1,8 @@
 # EasyAmt frontend
 
-React + TypeScript SPA scaffolded with Vite from the EasyAmt SAD, including its version 1.1 Vertex AI amendment (7 November 2026). The current backend implements only health endpoints, so this frontend provides navigation, Supabase email/password authentication, bilingual UI, local PDF validation and feature boundaries. It does not submit or display analyses yet.
+React + TypeScript SPA built with Vite against the current `laqg` backend branch. It supports Supabase authentication, PDF upload, status polling, preliminary candidate results, a browser PDF view, document listing and deletion. Candidate obligations, quotes and dates are **not verified** by this backend phase. Task updates, date anchors and account deletion remain unavailable in the backend.
+
+The interface language selector offers English, Spanish and German and remembers the selection in the browser. The upload form offers the same three languages for the generated summary, independently of the interface language.
 
 ## Local setup
 
@@ -25,18 +27,19 @@ npm test
 
 ## API integration
 
-The FastAPI backend will publish OpenAPI at `/openapi.json`. Once the document and task routes are implemented, run:
+The FastAPI backend publishes OpenAPI at `/openapi.json`. With the backend running locally, generate its current types using:
 
 ```sh
 npm run generate:api
 ```
 
-The generated file belongs at `src/shared/api/generated.ts`. Wire feature API hooks to its types and the authenticated `apiRequest` helper. Poll the future document status endpoint at 1–3 second intervals until completion or failure. Keep the selected PDF in memory and reattach it after a reload if a viewer needs it; do not persist the file.
+The generated file belongs at `src/shared/api/generated.ts`. The current handwritten response types in `src/features/documents/api.ts` mirror this branch's Pydantic schemas; replace them with generated types when the contract is frozen. The frontend calls `/v1/documents/upload`, `/v1/documents/{id}/status`, `/v1/documents/{id}/analysis`, the list endpoint and DELETE. It keeps PDFs in memory only and verifies SHA-256 before reattaching after a reload.
 
 ## Structure
 
 - `src/features/auth`: Supabase client and sign-in UI.
 - `src/features/upload`: PDF selection and validation.
+- `src/features/documents`: upload, status polling, candidate results, PDF reattachment, list and delete.
 - `src/shared/api`: API helper and OpenAPI generation target.
 - `src/shared/i18n.ts`: Spanish and English copy.
 - `src/App.tsx`: starter navigation and feature screens.
