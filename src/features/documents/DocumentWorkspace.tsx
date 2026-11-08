@@ -20,6 +20,7 @@ function errorKey(error: unknown): string {
 
 function UploadPanel({ token, onUploaded }: { token: string; onUploaded: (document: DocumentRecord) => void }) {
   const { t, i18n } = useTranslation()
+  const localBackend = /^https?:\/\/(?:localhost|127\.0\.0\.1)(?::|\/|$)/i.test(config.apiBaseUrl)
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<PdfValidationError | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -61,7 +62,7 @@ function UploadPanel({ token, onUploaded }: { token: string; onUploaded: (docume
       <label className="select-label">{t('outputLanguage')}<select value={language} onChange={(event) => setLanguage(event.target.value as 'es' | 'en' | 'de')}><option value="es">Español</option><option value="en">English</option><option value="de">Deutsch</option></select></label>
       <label className="consent"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />{t('consent')}</label>
       {mutation.error && <p className="error" role="alert">{t(errorKey(mutation.error))}</p>}
-      {import.meta.env.DEV && mutation.error && !(mutation.error instanceof ApiError) && <p className="pending">{t('devBackendHint', { url: config.apiBaseUrl })}</p>}
+      {import.meta.env.DEV && mutation.error && !(mutation.error instanceof ApiError) && <p className="pending">{t(localBackend ? 'devBackendHint' : 'devRemoteBackendHint', { url: config.apiBaseUrl })}</p>}
       <button type="button" className="button primary upload-submit" disabled={!file || !consent || mutation.isPending} onClick={() => mutation.mutate()}>{mutation.isPending ? t('uploading') : t('submitUpload')}</button>
       <p className="pending">{t('candidateNotice')}</p>
     </div>
