@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import type { ChangeEvent } from 'react'
+import type { ChangeEvent, DragEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { ApiError } from '../../shared/api/client'
+import { config } from '../../shared/config'
 import { validatePdf } from '../upload/validation'
 import type { PdfValidationError } from '../upload/validation'
 import { deleteDocument, getDocumentAnalysis, listDocuments, uploadDocument } from './api'
@@ -21,6 +22,7 @@ function UploadPanel({ token, onUploaded }: { token: string; onUploaded: (docume
   const { t, i18n } = useTranslation()
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<PdfValidationError | null>(null)
+  const [dragging, setDragging] = useState(false)
   const [consent, setConsent] = useState(false)
   const [language, setLanguage] = useState<'es' | 'en' | 'de'>(i18n.language === 'en' || i18n.language === 'de' ? i18n.language : 'es')
   const mutation = useMutation({
@@ -28,24 +30,38 @@ function UploadPanel({ token, onUploaded }: { token: string; onUploaded: (docume
     onSuccess: (document) => { rememberPdf(document.id, file!); onUploaded(document) },
   })
 
-  function selectFile(event: ChangeEvent<HTMLInputElement>) {
-    const candidate = event.target.files?.[0] ?? null
+  function acceptFile(candidate: File | null) {
     const problem = candidate ? validatePdf(candidate) : null
     setFile(problem ? null : candidate)
     setError(problem)
     mutation.reset()
-    if (problem) event.target.value = ''
+  }
+
+  function selectFile(event: ChangeEvent<HTMLInputElement>) {
+    acceptFile(event.target.files?.[0] ?? null)
+    // Let the same file be selected again after an error or a completed upload.
+    event.target.value = ''
+  }
+
+  function dropFile(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault()
+    setDragging(false)
+    acceptFile(event.dataTransfer.files[0] ?? null)
   }
 
   return <section className="workspace-panel">
     <p className="eyebrow">{t('uploadEyebrow')}</p><h1>{t('uploadTitle')}</h1><p className="muted">{t('uploadIntro')}</p>
     <div className="upload-card">
-      <label className="file-picker"><input type="file" accept="application/pdf,.pdf" onChange={selectFile} /><span className="upload-icon" aria-hidden="true">↥</span><strong>{t('chooseFile')}</strong><small>{t('dropHint')}</small></label>
+      <input id="analysis-pdf" className="file-picker-input" type="file" accept="application/pdf,.pdf" aria-label={t('chooseFile')} onChange={selectFile} />
+      <label htmlFor="analysis-pdf" className={`file-picker${dragging ? ' is-dragging' : ''}${file ? ' has-file' : ''}`} onDragEnter={(event) => { event.preventDefault(); setDragging(true) }} onDragOver={(event) => { event.preventDefault(); setDragging(true) }} onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragging(false) }} onDrop={dropFile}>
+        <span className="upload-icon" aria-hidden="true">↥</span><strong>{t(file ? 'changeFile' : 'chooseFile')}</strong><small>{file ? file.name : t('dropHint')}</small>
+      </label>
       {error && <p className="error" role="alert">{t(error)}</p>}
       {file && <p className="selected-file"><strong>{t('selectedFile')}:</strong> {file.name} · {(file.size / 1024 / 1024).toFixed(2)} MB</p>}
       <label className="select-label">{t('outputLanguage')}<select value={language} onChange={(event) => setLanguage(event.target.value as 'es' | 'en' | 'de')}><option value="es">Español</option><option value="en">English</option><option value="de">Deutsch</option></select></label>
       <label className="consent"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />{t('consent')}</label>
       {mutation.error && <p className="error" role="alert">{t(errorKey(mutation.error))}</p>}
+      {import.meta.env.DEV && mutation.error && !(mutation.error instanceof ApiError) && <p className="pending">{t('devBackendHint', { url: config.apiBaseUrl })}</p>}
       <button type="button" className="button primary upload-submit" disabled={!file || !consent || mutation.isPending} onClick={() => mutation.mutate()}>{mutation.isPending ? t('uploading') : t('submitUpload')}</button>
       <p className="pending">{t('candidateNotice')}</p>
     </div>

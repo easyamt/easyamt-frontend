@@ -3,6 +3,7 @@
 React + TypeScript SPA built with Vite against the current `laqg` backend branch. It supports Supabase authentication, PDF upload, status polling, preliminary candidate results, a browser PDF view, document listing and deletion. Candidate obligations, quotes and dates are **not verified** by this backend phase. Task updates, date anchors and account deletion remain unavailable in the backend.
 
 The interface language selector offers English, Spanish and German and remembers the selection in the browser. The upload form offers the same three languages for the generated summary, independently of the interface language.
+English is the default when no interface preference has been saved. PDF selection supports clicking and drag-and-drop. Uploading an analysis requires the FastAPI backend at `VITE_API_BASE_URL`; starting only Vite does not start the API.
 
 ## Local setup
 
