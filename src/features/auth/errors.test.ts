@@ -22,6 +22,12 @@ describe('authentication error messages', () => {
     expect(authErrorKey({ code: 'email_exists' }, 'signUp')).toBe('authEmailExists')
     expect(authErrorKey({ status: 429 }, 'signUp')).toBe('authRateLimit')
   })
+  it('only reports existing accounts in registration, never in sign in', () => {
+    for (const code of ['email_exists', 'user_already_exists']) {
+      expect(authErrorKey({ code }, 'signIn')).toBe('authInvalidCredentials')
+      expect(authErrorKey({ code }, 'signUp')).toBe('authEmailExists')
+    }
+  })
   it('uses a translatable fallback for unknown errors in each mode', () => {
     expect(authErrorKey({ message: 'Internal provider detail' }, 'signIn')).toBe('authSignInError')
     expect(authErrorKey({ message: 'Internal provider detail' }, 'signUp')).toBe('authSignUpError')
