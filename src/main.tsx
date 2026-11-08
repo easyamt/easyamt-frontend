@@ -5,6 +5,10 @@ import App from './App'
 import './shared/i18n'
 import './styles.css'
 
+const DevMascotGallery = import.meta.env.DEV && window.location.pathname === '/dev/mascot'
+  ? React.lazy(() => import('./features/mascot/MascotGallery'))
+  : null
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 })
@@ -12,7 +16,7 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <React.Suspense fallback={null}>{DevMascotGallery ? <DevMascotGallery /> : <App />}</React.Suspense>
     </QueryClientProvider>
   </React.StrictMode>,
 )
