@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { supabase } from './features/auth/supabase'
 import { authErrorKey } from './features/auth/errors'
+import { registrationEmailError } from './features/auth/registration'
 import DocumentWorkspace from './features/documents/DocumentWorkspace'
 import { clearPdfs } from './features/documents/pdfStore'
 import { authConfigured } from './shared/config'
@@ -17,6 +18,7 @@ function AuthForm() {
   const [password, setPassword] = useState('')
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn')
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -25,12 +27,22 @@ function AuthForm() {
     if (!supabase) return
     setBusy(true)
     setError('')
+    setNotice('')
     try {
+      if (mode === 'signUp') {
+        const emailError = await registrationEmailError(email)
+        if (emailError) {
+          setError(emailError)
+          return
+        }
+      }
       const result = mode === 'signIn'
         ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password })
+        : await supabase.auth.signUp({ email: email.trim(), password })
       if (result.error) {
         setError(authErrorKey(result.error, mode))
+      } else if (mode === 'signUp' && !result.data.session) {
+        setNotice('authSignupNotice')
       }
     } catch {
       setError('authConnectionError')
@@ -43,7 +55,7 @@ function AuthForm() {
     <p className="eyebrow">EASYAMT</p>
     <h1 id="auth-heading">{t(mode === 'signUp' ? 'signUp' : 'authTitle')}</h1>
     <form onSubmit={(event) => { void submit(event) }}>
-      <label>{t('email')}<input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+      <label>{t('email')}<input type="email" autoComplete="email" required value={email} onChange={(event) => { setEmail(event.target.value); setError(''); setNotice('') }} /></label>
       <div className="password-field">
         <label htmlFor="auth-password">{t('password')}</label>
         <div className="password-control">
@@ -54,9 +66,10 @@ function AuthForm() {
         </div>
       </div>
       {error && <p role="alert" className="error auth-error">{t(error)}</p>}
+      {notice && <p role="status" className="auth-notice">{t(notice)}</p>}
       <button className="button primary" disabled={busy} type="submit">{t(mode)}</button>
     </form>
-    <button className="text-button" disabled={busy} onClick={() => { setMode(mode === 'signIn' ? 'signUp' : 'signIn'); setError(''); setShowPassword(false) }}>{t(mode === 'signIn' ? 'signUp' : 'signIn')}</button>
+    <button className="text-button" disabled={busy} onClick={() => { setMode(mode === 'signIn' ? 'signUp' : 'signIn'); setError(''); setNotice(''); setPassword(''); setShowPassword(false) }}>{t(mode === 'signIn' ? 'signUp' : 'signIn')}</button>
   </section>
 }
 

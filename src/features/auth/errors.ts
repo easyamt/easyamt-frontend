@@ -6,7 +6,7 @@ export function authErrorKey(error: AuthFailure, mode: 'signIn' | 'signUp') {
   if (error.code === 'user_banned') return 'authAccountUnavailable'
   if (error.status === 0 || error.code === 'request_timeout') return 'authConnectionError'
   if (mode === 'signIn') {
-    if (['invalid_credentials', 'user_not_found', 'weak_password'].includes(error.code ?? '')
+    if (['invalid_credentials', 'user_not_found', 'weak_password', 'email_exists', 'user_already_exists'].includes(error.code ?? '')
       || /invalid login credentials|password should contain/i.test(error.message ?? '')) return 'authInvalidCredentials'
     return 'authSignInError'
   }
