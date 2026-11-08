@@ -1,0 +1,11 @@
+Assets (copied byte-for-byte from src/sprites/CatPackFree/CatPackFree/):
+- catpack-idle.png: Idle.png
+- catpack-box.png: Box3.png
+- catpack-answer.png: drculacat.png
+
+Author: [AUTHOR — to be supplied]
+Source URL: [SOURCE URL — to be supplied]
+License name: [LICENSE NAME — to be supplied]
+Attribution text: [ATTRIBUTION TEXT — to be supplied]
+
+The local pack includes no license metadata. These placeholders do not grant rights.

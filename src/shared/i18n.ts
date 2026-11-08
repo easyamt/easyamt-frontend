@@ -1,8 +1,16 @@
+import { mascotCopy } from '../features/mascot/mascotTranslations'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
 const resources = {
   es: { translation: {
+    mascot: {
+      ...mascotCopy.es,
+      name: 'Tu acompañante', reading: 'Estoy leyendo tu carta.', thinking: 'Estoy entendiendo los detalles.',
+      checking: 'Estoy revisando el resultado.', celebrating: '¡El análisis está listo! Revisa tu carta.',
+      confused: 'No se pudo terminar. Puedes intentarlo de nuevo.', asking: 'Falta la fecha en que recibiste la carta.',
+      idle: 'Aquí estoy mientras revisas tu carta.', close: 'Ocultar acompañante', restore: 'Mostrar acompañante', activate: 'Abrir acompañante',
+    },
     pageTitle: 'EasyAmt · Entiende tu carta', brandHome: 'EasyAmt: inicio',
     tagline: 'German bureocracy, made simple.',
     navHome: 'Inicio', navAnalyze: 'Analizar carta', navDocuments: 'Mis cartas',
@@ -47,6 +55,13 @@ const resources = {
     footer: 'EasyAmt · Información orientativa, no asesoramiento legal.',
   } },
   en: { translation: {
+    mascot: {
+      ...mascotCopy.en,
+      name: 'Your companion', reading: 'I’m reading your letter.', thinking: 'I’m working through the details.',
+      checking: 'I’m checking the result.', celebrating: 'Your analysis is ready! Review your letter.',
+      confused: 'That didn’t finish. You can try again.', asking: 'The date you received the letter is missing.',
+      idle: 'I’m here while you review your letter.', close: 'Hide companion', restore: 'Show companion', activate: 'Open companion',
+    },
     pageTitle: 'EasyAmt · Understand your letter', brandHome: 'EasyAmt home',
     tagline: 'German bureocracy, made simple.',
     navHome: 'Home', navAnalyze: 'Analyze letter', navDocuments: 'My letters',
@@ -91,6 +106,13 @@ const resources = {
     footer: 'EasyAmt · Guidance only, not legal advice.',
   } },
   de: { translation: {
+    mascot: {
+      ...mascotCopy.de,
+      name: 'Ihre Begleitung', reading: 'Ich lese Ihren Brief.', thinking: 'Ich gehe die Einzelheiten durch.',
+      checking: 'Ich prüfe das Ergebnis.', celebrating: 'Die Analyse ist fertig! Prüfen Sie Ihren Brief.',
+      confused: 'Das hat nicht geklappt. Versuchen Sie es erneut.', asking: 'Das Empfangsdatum des Briefes fehlt.',
+      idle: 'Ich bin bei der Prüfung Ihres Briefes dabei.', close: 'Begleitung ausblenden', restore: 'Begleitung einblenden', activate: 'Begleitung öffnen',
+    },
     pageTitle: 'EasyAmt · Ihren Brief verstehen', brandHome: 'EasyAmt Startseite',
     tagline: 'German bureocracy, made simple.',
     navHome: 'Startseite', navAnalyze: 'Brief analysieren', navDocuments: 'Meine Briefe',

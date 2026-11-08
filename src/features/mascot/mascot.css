@@ -1,0 +1,41 @@
+﻿.mascot-panel { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 10; width: min(320px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); display: flex; flex-direction: column; gap: 8px; padding: 4px; }
+.mascot-bubble { flex-shrink: 0; background: #fff; border: 1px solid #bcd4c4; border-radius: 16px 16px 4px 16px; padding: 12px 16px; color: #254e40; font-size: 13px; line-height: 1.5; box-shadow: 0 4px 18px #254a3514; overflow-wrap: anywhere; }
+.mascot-controls { flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.mascot-dock button { background: #fff; color: #254e40; border: 1px solid #bcd4c4; border-radius: 10px; min-height: 44px; padding: 8px 12px; }
+.mascot-dock :is(button, textarea):focus-visible { outline: 3px solid #185741; outline-offset: 2px; }
+.mascot-dock .mascot-chat-trigger { width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 50%; background: transparent; padding: 0; font-size: 30px; font-weight: 800; line-height: 1; }
+.mascot-dock .mascot-chat-trigger:hover, .mascot-dock .mascot-chat-trigger[aria-expanded="true"] { background: #e6f0ed; }
+.mascot-sprite[data-animated="true"] { animation: mascot-bob 1.2s steps(2, end) infinite; }
+.mascot-sprite[data-animated="true"][data-state="responding"] { animation: mascot-talk .6s steps(2, end) infinite; }
+@keyframes mascot-bob { 50% { translate: 0 -4px; } }
+@keyframes mascot-talk { 50% { translate: 0 -6px; } }
+.detail-panel:has(.mascot-dock) { margin-right: 344px; }
+.detail-panel:has(.mascot-dock) .result-grid { grid-template-columns: 1fr; }
+.detail-panel:has(.mascot-dock) .pdf-panel { position: static; }
+/* Chat grows above the status bubble; the cat's row remains at the bottom. */
+.mascot-chat { display: flex; flex-direction: column; flex: 0 1 auto; min-height: 0; gap: 8px; font-size: 13px; overflow-wrap: anywhere; }
+.mascot-chat h2 { font-size: 14px; margin: 0; flex-shrink: 0; }
+.mascot-chat-hint { font-size: 11px; color: #526960; line-height: 1.5; margin: 0; flex-shrink: 0; }
+.mascot-chat-notice { background: #f6f4ef; padding: 6px 8px; border-radius: 8px; font-size: 11px; color: #526960; flex-shrink: 0; }
+.mascot-chat-notice summary { cursor: pointer; }
+.mascot-chat-notice p { margin: 6px 0 0; line-height: 1.5; }
+.mascot-messages { display: flex; flex-direction: column; gap: 8px; min-height: 0; max-height: min(320px, 35dvh); overflow-y: auto; overscroll-behavior: contain; padding: 2px; scrollbar-gutter: stable; }
+/* Old bubbles scroll upward; each new question/reply arrives above the composer. */
+.mascot-message { flex-shrink: 0; align-self: flex-start; max-width: 94%; padding: 10px 12px; margin: 0; border: 1px solid #bcd4c4; background: #fff; border-radius: 16px 16px 16px 4px; }
+.mascot-message.user { align-self: flex-end; background: #e6f0ed; border-radius: 16px 16px 4px 16px; }
+.mascot-message p { white-space: pre-wrap; line-height: 1.5; margin: 6px 0; }
+.mascot-message blockquote { border-left: 3px solid #91bf9b; margin: 8px 0; padding-left: 8px; font-size: 12px; }
+.mascot-message small { color: #665719; }
+.mascot-followups { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px; flex-shrink: 0; }
+.mascot-followups button { font-size: 11px; text-align: left; max-width: 100%; }
+.mascot-composer { flex-shrink: 0; border: 1px solid #bcd4c4; background: #fff; border-radius: 16px 16px 4px 16px; padding: 10px; }
+.mascot-chat label { display: block; font-size: 12px; }
+.mascot-chat textarea { display: block; width: 100%; resize: vertical; max-height: 120px; margin: 6px 0; border: 1px solid #bcd4c4; border-radius: 8px; padding: 8px; font: inherit; }
+.mascot-chat button[type="submit"] { width: 100%; background: #185741; color: #fff; }
+.mascot-chat button:disabled { opacity: .6; cursor: not-allowed; }
+.mascot-chat .error { margin: 0; padding: 8px; background: #fff; border-radius: 8px; flex-shrink: 0; }
+@media (max-width: 1100px), (max-height: 500px) {
+  .detail-panel:has(.mascot-dock) { margin-right: 0; }
+  .mascot-dock { margin-top: 24px; display: flex; justify-content: flex-end; }
+  .mascot-panel { position: static; max-height: none; }
+}
