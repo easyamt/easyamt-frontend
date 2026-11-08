@@ -4,6 +4,7 @@ import type { Session } from '@supabase/supabase-js'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { supabase } from './features/auth/supabase'
+import { authErrorKey } from './features/auth/errors'
 import DocumentWorkspace from './features/documents/DocumentWorkspace'
 import { clearPdfs } from './features/documents/pdfStore'
 import { authConfigured } from './shared/config'
@@ -17,6 +18,7 @@ function AuthForm() {
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -27,9 +29,11 @@ function AuthForm() {
       const result = mode === 'signIn'
         ? await supabase.auth.signInWithPassword({ email, password })
         : await supabase.auth.signUp({ email, password })
-      if (result.error) setError(result.error.message || t('authError'))
+      if (result.error) {
+        setError(authErrorKey(result.error, mode))
+      }
     } catch {
-      setError(t('authError'))
+      setError('authConnectionError')
     } finally {
       setBusy(false)
     }
@@ -37,14 +41,22 @@ function AuthForm() {
 
   return <section className="auth-card" aria-labelledby="auth-heading">
     <p className="eyebrow">EASYAMT</p>
-    <h1 id="auth-heading">{t('authTitle')}</h1>
+    <h1 id="auth-heading">{t(mode === 'signUp' ? 'signUp' : 'authTitle')}</h1>
     <form onSubmit={(event) => { void submit(event) }}>
       <label>{t('email')}<input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-      <label>{t('password')}<input type="password" autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'} minLength={6} required value={password} onChange={(event) => setPassword(event.target.value)} /></label>
-      {error && <p role="alert" className="error">{error}</p>}
+      <div className="password-field">
+        <label htmlFor="auth-password">{t('password')}</label>
+        <div className="password-control">
+          <input id="auth-password" type={showPassword ? 'text' : 'password'} autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'} required value={password} onChange={(event) => { setPassword(event.target.value); setError('') }} />
+          <button type="button" className="password-toggle" aria-label={t(showPassword ? 'hidePassword' : 'showPassword')} title={t(showPassword ? 'hidePassword' : 'showPassword')} aria-controls="auth-password" aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="m3 3 18 18" />}</svg>
+          </button>
+        </div>
+      </div>
+      {error && <p role="alert" className="error auth-error">{t(error)}</p>}
       <button className="button primary" disabled={busy} type="submit">{t(mode)}</button>
     </form>
-    <button className="text-button" onClick={() => setMode(mode === 'signIn' ? 'signUp' : 'signIn')}>{t(mode === 'signIn' ? 'signUp' : 'signIn')}</button>
+    <button className="text-button" disabled={busy} onClick={() => { setMode(mode === 'signIn' ? 'signUp' : 'signIn'); setError(''); setShowPassword(false) }}>{t(mode === 'signIn' ? 'signUp' : 'signIn')}</button>
   </section>
 }
 
