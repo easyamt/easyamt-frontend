@@ -10,6 +10,7 @@ import { deleteDocument, getDocumentAnalysis, listDocuments, uploadDocument } fr
 import type { DocumentRecord } from './api'
 import { getRememberedPdf, matchesPdfHash, rememberPdf } from './pdfStore'
 import { useDocumentStatus } from './useDocumentStatus'
+import ImportantLocationsMap from '../locations/ImportantLocationsMap'
 
 type Screen = 'upload' | 'list' | 'detail'
 
@@ -118,7 +119,7 @@ function DetailPanel({ token, id, onBack, onDeleted }: { token: string; id: stri
       {document.status === 'completed' && <>
         {analysis.isLoading && <p>{t('loading')}</p>}
         {analysis.error && <p className="error">{t(errorKey(analysis.error))}</p>}
-        {analysis.data && <><div className="candidate-banner">{t('candidateNotice')}</div><section className="result-card"><p className="eyebrow">{t('summary')}</p><h2>{analysis.data.document.summary || t('noSummary')}</h2></section><div className="result-grid"><div><h2>{t('candidateObligations')}</h2>{analysis.data.obligations.length === 0 && <p className="muted">{t('noObligations')}</p>}{analysis.data.obligations.map((obligation, index) => <article className="obligation-card" key={obligation.id}><p className="eyebrow">{t('obligation')} {index + 1}</p><h3>{obligation.action}</h3>{obligation.description && <p>{obligation.description}</p>}{obligation.required_documents.length > 0 && <><strong>{t('requiredDocuments')}</strong><ul>{obligation.required_documents.map((item, i) => <li key={i}>{item}</li>)}</ul></>}{obligation.consequence && <p><strong>{t('consequence')}:</strong> {obligation.consequence}</p>}{obligation.deadline.quote && <p><strong>{t('deadlineMention')}:</strong> {obligation.deadline.quote}</p>}{obligation.evidence.map((evidence) => <blockquote key={evidence.id}><span>{t('candidateEvidence')} · {t('page')} {evidence.page}</span><p lang="de">“{evidence.quote}”</p></blockquote>)}</article>)}</div><PdfPreview document={document} /></div></>}
+        {analysis.data && <><div className="candidate-banner">{t('candidateNotice')}</div><section className="result-card"><p className="eyebrow">{t('summary')}</p><h2>{analysis.data.document.summary || t('noSummary')}</h2></section><ImportantLocationsMap locations={analysis.data.important_locations ?? []} /><div className="result-grid"><div><h2>{t('candidateObligations')}</h2>{analysis.data.obligations.length === 0 && <p className="muted">{t('noObligations')}</p>}{analysis.data.obligations.map((obligation, index) => <article className="obligation-card" key={obligation.id}><p className="eyebrow">{t('obligation')} {index + 1}</p><h3>{obligation.action}</h3>{obligation.description && <p>{obligation.description}</p>}{obligation.required_documents.length > 0 && <><strong>{t('requiredDocuments')}</strong><ul>{obligation.required_documents.map((item, i) => <li key={i}>{item}</li>)}</ul></>}{obligation.consequence && <p><strong>{t('consequence')}:</strong> {obligation.consequence}</p>}{obligation.deadline.quote && <p><strong>{t('deadlineMention')}:</strong> {obligation.deadline.quote}</p>}{obligation.evidence.map((evidence) => <blockquote key={evidence.id}><span>{t('candidateEvidence')} · {t('page')} {evidence.page}</span><p lang="de">“{evidence.quote}”</p></blockquote>)}</article>)}</div><PdfPreview document={document} /></div></>}
       </>}
     </>}
   </section>

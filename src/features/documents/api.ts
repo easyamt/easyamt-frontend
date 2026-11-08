@@ -57,9 +57,31 @@ export interface CandidateObligation {
   evidence: CandidateEvidence[]
 }
 
+export type LocationCategory = 'public_office' | 'court' | 'school' | 'hospital' | 'police' | 'other'
+export type GeocodingStatus = 'resolved' | 'ambiguous' | 'not_found' | 'unavailable'
+
+export interface ImportantLocation {
+  id: string
+  name: string
+  category: LocationCategory
+  address: string | null
+  city: string | null
+  country: string | null
+  source_page: number | null
+  source_quote: string | null
+  confidence: 'high' | 'medium' | 'low' | null
+  geocoding_status: GeocodingStatus
+  normalized_address: string | null
+  coordinates: {
+    latitude: number
+    longitude: number
+  } | null
+}
+
 export interface DocumentAnalysis {
   document: DocumentRecord
   obligations: CandidateObligation[]
+  important_locations?: ImportantLocation[]
   interpretation_verified: false
 }
 
